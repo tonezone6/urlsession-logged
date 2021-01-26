@@ -4,6 +4,7 @@ A lightweight Swift package extending `URLSession` for logging network activity 
 You can use `Logger` methods directly into your networking code
 
 ``` swift
+...
 URLSession.shared.dataTask(with: request) { (data, response, error) in
     if let error = error {
         Logger.log(error)
@@ -14,15 +15,15 @@ URLSession.shared.dataTask(with: request) { (data, response, error) in
         Logger.log(data)
         ...
     }
-}
+}...
 ```
 
-or you can use the convenient `load(_:with:)` methods.
-`Combine` variant:
+or you can use the convenient `load(_:with:)` methods (`Combine` variant is used below)
 
 ```swift
+...
 URLSession.shared
-    .load(Response.self, with: request)
+    .load(SomeModel.self, with: request)
     .compactMap { $0.user }
     .map { user in 
         user.first + " " + user.last
