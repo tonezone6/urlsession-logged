@@ -1,3 +1,3 @@
 # SwiftNetworkLogger
 
-A lightweight Swift package for logging network requests into the console.
+A lightweight Swift package extending `URLSession` for logging network activity into the console using `Combine` .
