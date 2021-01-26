@@ -1,7 +1,23 @@
 # SwiftNetworkLogger
 
 A lightweight Swift package extending `URLSession` for logging network activity into the console.
-To enable that, use the custom  `Combine` publisher. 
+You can use `Logger` methods directly into your networking code
+
+``` swift
+URLSession.shared.dataTask(with: request) { (data, response, error) in
+    if let error = error {
+        Logger.log(error)
+        return completion(.failure(error))
+    }
+    if let response = response, let data = data {
+        Logger.log(response)
+        Logger.log(data)
+        // ...
+    }
+}
+```
+
+or you can use built in `load(_:with:)` methods 
 
 ```swift
 URLSession.shared
@@ -10,5 +26,25 @@ URLSession.shared
     .map { user in 
         user.first + " " + user.last
     }
-    .eraseToAnyPublisher()
+```
+
+Output
+
+```
+⬆️ POST https://some-endpoint.com/user
++ request headers: ["Content-Type": "application/json"]
++ request body: {
+  "foo" : "Foo",
+  "bar" : "Bar"
+}
+
+✅ https://some-endpoint.com/user
++ response code: 200
++ response body:
+{
+  "id" : 25918204,
+  "time" : 1611680417,
+  "first" : "John",
+  "last" : "Williams"
+}
 ```

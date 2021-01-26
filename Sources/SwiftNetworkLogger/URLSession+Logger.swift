@@ -2,7 +2,6 @@
 //  URLSession+Logger.swift
 //
 //  Created by tonezone6 on 08/06/2020.
-//  Copyright © 2020 HCL Online Advertising S.R.L. All rights reserved.
 //
 
 import Foundation
