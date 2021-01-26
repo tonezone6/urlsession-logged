@@ -1,3 +1,3 @@
 # SwiftNetworkLogger
 
-A description of this package.
+A lightweight Swift package for logging network requests into the console.
