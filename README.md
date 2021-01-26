@@ -12,12 +12,13 @@ URLSession.shared.dataTask(with: request) { (data, response, error) in
     if let response = response, let data = data {
         Logger.log(response)
         Logger.log(data)
-        // ...
+        ...
     }
 }
 ```
 
-or you can use built in `load(_:with:)` methods 
+or you can use the convenient `load(_:with:)` methods.
+`Combine` variant:
 
 ```swift
 URLSession.shared
@@ -26,9 +27,10 @@ URLSession.shared
     .map { user in 
         user.first + " " + user.last
     }
+    ...
 ```
 
-Output
+Console output example
 
 ```
 ⬆️ POST https://some-endpoint.com/user
