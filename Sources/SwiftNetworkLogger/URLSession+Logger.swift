@@ -33,6 +33,7 @@ public extension URLSession {
 
         public static func log(_ request: URLRequest) {
             var output: [String] = []
+            output.append("\n")
             
             if let method = request.httpMethod, let url = request.url?.absoluteString {
                 output.append("\(Icon.request) \(method) \(url)")
@@ -44,7 +45,6 @@ public extension URLSession {
                 output.append("\(Item.requestBody.formatted) \(body)")
             }
             output.append("\n")
-            
             print(output.log)
         }
         
@@ -56,7 +56,6 @@ public extension URLSession {
             else { return }
             
             var output: [String] = []
-            output.append("\n")
             output.append("\(Icon.success) \(url)")
             output.append("\(Item.responseCode.formatted) \(urlResponse.statusCode)")
             
