@@ -31,7 +31,7 @@ public extension URLSession {
 
         // MARK: Request.
 
-        static func log(_ request: URLRequest) {
+        public static func log(_ request: URLRequest) {
             var output: [String] = []
             
             if let method = request.httpMethod, let url = request.url?.absoluteString {
@@ -50,7 +50,7 @@ public extension URLSession {
         
         // MARK: Response.
 
-        static func log(_ response: URLResponse) {
+        public static func log(_ response: URLResponse) {
             guard let urlResponse = response as? HTTPURLResponse,
                   let url = urlResponse.url?.absoluteString
             else { return }
@@ -65,7 +65,7 @@ public extension URLSession {
         
         // MARK: Data.
 
-        static func log(_ data: Data) {
+        public static func log(_ data: Data) {
             guard let body = json(with: data), !body.isEmpty
             else { return }
             
@@ -78,7 +78,7 @@ public extension URLSession {
         
         // MARK: Error.
         
-        static func log(_ error: Error) {
+        public static func log(_ error: Error) {
             guard let error = error as? URLError,
                   let url = error.failureURLString
             else { return }
