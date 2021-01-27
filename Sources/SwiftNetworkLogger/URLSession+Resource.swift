@@ -20,8 +20,7 @@ public extension URLSession {
             if let error = error {
                 Logger.log(error)
                 return completion(.failure(error))
-            }
-            if let response = response, let data = data {
+            } else if let response = response, let data = data {
                 Logger.log(response)
                 Logger.log(data)
                 do {
@@ -31,6 +30,6 @@ public extension URLSession {
                     completion(.failure(error))
                 }
             }
-        }
+        }.resume()
     }
 }

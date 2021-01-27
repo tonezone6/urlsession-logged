@@ -4,31 +4,31 @@ A lightweight Swift package extending `URLSession` for logging network activity 
 You can use `Logger` methods directly into your networking code
 
 ``` swift
-URLSession.shared.dataTask(with: request) { (data, response, error) in
-    if let error = error {
-        Logger.log(error)
-        return completion(.failure(error))
-    }
-    if let response = response, let data = data {
-        Logger.log(response)
-        Logger.log(data)
-        // ...
-    }
-}.resume()
+if let error = error {
+    Logger.log(error)
+    // ...
+} 
+if let response = response, let data = data {
+    Logger.log(response)
+    Logger.log(data)
+    // ...
+}
 ```
 
-or you can use the convenient `load(_:with:)` methods (`Combine` variant is used below)
+or you can use  `load(_:with:)` convenient method which logs output automatically
 
 ```swift
-URLSession.shared
-    .load(SomeModel.self, with: request)
-    .compactMap { $0.user }
-    .map { user in 
-        user.first + " " + user.last
+URLSession.shared.load(User.self, with: request) { result in
+    switch result {
+    case .success(let user):  
+        // ...
+    case .failure(let error): 
+        // ...
     }
+}
 ```
 
-Console output example
+Output
 
 ```
 ⬆️ POST https://some-endpoint.com/user
@@ -41,11 +41,8 @@ Console output example
 ✅ https://some-endpoint.com/user
 + response code: 200
 + response body: {
-    "time" : 1611680417,
-    "user" : {
-        "id" : 25918204,
-        "first" : "John",
-        "last" : "Williams"
-    }
+    "id" : 25918204,
+    "first" : "John",
+    "last" : "Williams"
 }
 ```
