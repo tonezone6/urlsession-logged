@@ -33,7 +33,6 @@ public extension URLSession {
 
         public static func log(_ request: URLRequest) {
             var output: [String] = []
-            output.append("\n")
             
             if let method = request.httpMethod, let url = request.url?.absoluteString {
                 output.append("\(Icon.request) \(method) \(url)")
@@ -44,7 +43,7 @@ public extension URLSession {
             if let data = request.httpBody, let body = json(with: data) {
                 output.append("\(Item.requestBody.formatted) \(body)")
             }
-            output.append("\n")
+            output.append("+++++")
             print(output.log)
         }
         
@@ -71,6 +70,7 @@ public extension URLSession {
             var output: [String] = []
             output.append("\(Item.responseBody.formatted)")
             output.append(body)
+            output.append("+++++")
             
             print(output.log)
         }
@@ -83,10 +83,10 @@ public extension URLSession {
             else { return }
             
             var output: [String] = []
-            output.append("\n")
             output.append("\(Icon.failure) \(url)")
             output.append("\(Item.responseCode.formatted) \(error.errorCode)")
             output.append("\(Item.responseError.formatted) \(error.localizedDescription)")
+            output.append("+++++")
             
             print(output.log)
         }
