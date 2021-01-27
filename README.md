@@ -1,7 +1,7 @@
 # SwiftNetworkLogger
 
-A lightweight Swift package extending `URLSession` for logging network activity into the console.
-You can use `Logger` methods directly into your networking code
+A lightweight Swift package to help development phase, logging network activity into the console.
+It simply extends `URLSession` and you can use `Logger` methods directly into your networking code
 
 ``` swift
 if let error = error {
@@ -15,7 +15,7 @@ if let response = response, let data = data {
 }
 ```
 
-or you can use  `load(_:with:)` convenient method which logs output automatically
+or you can just use  `load(_:with:)` method
 
 ```swift
 URLSession.shared.load(User.self, with: request) { result in
