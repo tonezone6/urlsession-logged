@@ -43,7 +43,6 @@ public extension URLSession {
             if let data = request.httpBody, let body = json(with: data) {
                 output.append("\(Item.requestBody.formatted) \(body)")
             }
-            output.append("...")
 
             print(output.log)
         }
@@ -71,7 +70,6 @@ public extension URLSession {
             var output: [String] = []
             output.append("\(Item.responseBody.formatted)")
             output.append(body)
-            output.append("---")
             
             print(output.log)
         }
@@ -87,7 +85,6 @@ public extension URLSession {
             output.append("\(Icon.failure) \(url)")
             output.append("\(Item.responseCode.formatted) \(error.errorCode)")
             output.append("\(Item.responseError.formatted) \(error.localizedDescription)")
-            output.append("---")
             
             print(output.log)
         }
