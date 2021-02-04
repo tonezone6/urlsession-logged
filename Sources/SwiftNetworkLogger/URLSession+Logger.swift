@@ -54,8 +54,11 @@ public extension URLSession {
                   let url = urlResponse.url?.absoluteString
             else { return }
             
+            let icon = (200...299)
+                .contains(urlResponse.statusCode) ? Icon.success : Icon.failure
+            
             var output: [String] = []
-            output.append("\(Icon.success) \(url)")
+            output.append("\(icon) \(url)")
             output.append("\(Item.responseCode.formatted) \(urlResponse.statusCode)")
             
             print(output.log)
