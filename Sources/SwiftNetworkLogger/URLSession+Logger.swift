@@ -24,8 +24,8 @@ public extension URLSession {
         }
         
         struct Icon {
-            static let request = "⬆️"
-            static let success = "✅"
+            static let request = "🚀"
+            static let success = "👍"
             static let failure = "⛔️"
         }
 
