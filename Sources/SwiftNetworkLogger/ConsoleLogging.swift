@@ -7,6 +7,7 @@
 import Foundation
 
 protocol ConsoleLogging {
+    
     static func log(_ request: URLRequest)
     static func log(_ response: URLResponse)
     static func log(_ data: Data)
@@ -23,18 +24,10 @@ enum Output: String {
     var bulletPrefix: String { "+ \(rawValue):" }
 }
 
-enum Symbol {
-    case request
-    case success
-    case failure
-    
-    var emojy: String {
-        switch self {
-        case .request: return "🚀"
-        case .success: return "👍"
-        case .failure: return "⛔️"
-        }
-    }
+enum Symbol: String {
+    case request = "🚀"
+    case success = "👍"
+    case failure = "⛔️"
 }
 
 extension ConsoleLogging {
@@ -42,8 +35,9 @@ extension ConsoleLogging {
     static func log(_ request: URLRequest) {
         var output: [String] = []
         
+        output.append("\n")
         if let method = request.httpMethod, let url = request.url?.absoluteString {
-            output.append("\(Symbol.request.emojy) \(method) \(url)")
+            output.append("\(Symbol.request) \(method) \(url)")
         }
         if let headers = request.allHTTPHeaderFields, !headers.isEmpty {
             output.append("\(Output.requestHeaders.bulletPrefix) \(headers)")
@@ -64,6 +58,7 @@ extension ConsoleLogging {
             .contains(urlResponse.statusCode) ? Symbol.success : Symbol.failure
         
         var output: [String] = []
+        output.append("\n")
         output.append("\(icon) \(url)")
         output.append("\(Output.responseCode.bulletPrefix) \(urlResponse.statusCode)")
         
@@ -87,7 +82,8 @@ extension ConsoleLogging {
         else { return }
         
         var output: [String] = []
-        output.append("\(Symbol.failure.emojy) \(url)")
+        output.append("\n")
+        output.append("\(Symbol.failure) \(url)")
         output.append("\(Output.responseCode.bulletPrefix) \(error.errorCode)")
         output.append("\(Output.responseError.bulletPrefix) \(error.localizedDescription)")
         
