@@ -41,8 +41,7 @@ extension ConsoleLogging {
            let url = request.url?.absoluteString {
             output.append(Symbol.request.rawValue + tab + method + " " + url)
         }
-        if let headers = request.allHTTPHeaderFields,
-           !headers.isEmpty {
+        if let headers = request.allHTTPHeaderFields, !headers.isEmpty {
             output.append(Output.requestHeaders.bulletPrefix + " " + "\(headers)")
         }
         if let data = request.httpBody,
@@ -66,11 +65,13 @@ extension ConsoleLogging {
             Symbol.failure.rawValue
         
         var output: [String] = []
+        
+        // Response code.
         output.append(icon + Self.tab + url)
         output.append(Output.responseCode.bulletPrefix + " " + "\(urlResponse.statusCode)")
         
-        if let body = Self.json(with: data),
-           !body.isEmpty {
+        // Data.
+        if let body = Self.json(with: data), !body.isEmpty {
             output.append(Output.responseBody.bulletPrefix + " " + body.tabbed)
         }
         output.append(Self.newline)
@@ -99,11 +100,11 @@ extension ConsoleLogging {
         // JSON encoded.
         if let object = try? JSONSerialization.jsonObject(with: data, options: []),
               let jsonData = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
-              let string = String(data: jsonData, encoding: .utf8) {
+              let string = String(data: jsonData, encoding: .utf8), !string.isEmpty {
             return string
         }
         // URL encoded.
-        if let string = String(data: data, encoding: .utf8) {
+        if let string = String(data: data, encoding: .utf8), !string.isEmpty {
             return string
         }
         return nil
