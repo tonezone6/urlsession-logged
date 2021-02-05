@@ -44,8 +44,11 @@ extension ConsoleLogging {
         if let headers = request.allHTTPHeaderFields, !headers.isEmpty {
             output.append(Output.requestHeaders.bulletPrefix + " " + "\(headers)")
         }
-        if let data = request.httpBody,
-           let body = json(with: data) {
+//        if let data = request.httpBody,
+//           let body = json(with: data) {
+//            output.append(Output.requestBody.bulletPrefix + " " + body)
+//        }
+        if let body = request.httpBody?.string {
             output.append(Output.requestBody.bulletPrefix + " " + body)
         }
         output.append(newline)
@@ -98,11 +101,14 @@ private extension ConsoleLogging {
     
     func json(with data: Data) -> String? {
         if let string = String(data: data, encoding: .utf8) {
-            /* URL encoded */ return string
-        } else if let json = try? JSONSerialization.jsonObject(with: data, options: []),
-              let jdata = try? JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted]),
-              let string = String(data: jdata, encoding: .utf8) {
-            /* JSON encoded */ return string
+            /* URL encoded */
+            return string
+        }
+        if let json = try? JSONSerialization.jsonObject(with: data, options: []),
+           let jdata = try? JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted]),
+           let string = String(data: jdata, encoding: .utf8) {
+            /* JSON encoded */
+            return string
         }
         return nil
     }
@@ -121,5 +127,22 @@ private extension String {
     
     var tabbed: String {
         replacingOccurrences(of: "\n", with: "\n\t")
+    }
+}
+
+private extension Data {
+    
+    var string: String? {
+        // JSON encoded.
+        if let object = try? JSONSerialization.jsonObject(with: self, options: []),
+              let data = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
+              let string = String(data: data, encoding: .utf8) {
+            return string
+        }
+        // URL encoded.
+        if let string = String(data: self, encoding: .utf8) {
+            return string
+        }
+        return nil
     }
 }
