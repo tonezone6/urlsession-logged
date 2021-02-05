@@ -97,15 +97,12 @@ extension ConsoleLogging {
 private extension ConsoleLogging {
     
     func json(with data: Data) -> String? {
-        // JSON encoded.
-        if let object = try? JSONSerialization.jsonObject(with: data, options: []),
-              let jsonData = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
-              let string = String(data: jsonData, encoding: .utf8), !string.isEmpty {
-            return string
-        }
-        // URL encoded.
-        if let string = String(data: data, encoding: .utf8), !string.isEmpty {
-            return string
+        if let string = String(data: data, encoding: .utf8) {
+            /* URL encoded */ return string
+        } else if let json = try? JSONSerialization.jsonObject(with: data, options: []),
+              let jdata = try? JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted]),
+              let string = String(data: jdata, encoding: .utf8) {
+            /* JSON encoded */ return string
         }
         return nil
     }
