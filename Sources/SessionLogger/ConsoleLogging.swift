@@ -9,9 +9,9 @@ import Foundation
 protocol ConsoleLogging {
     
     static func log(_ request: URLRequest)
-    static func log(_ response: URLResponse)
-    static func log(_ data: Data)
-    static func log(_ error: Error)
+    func log(_ response: URLResponse)
+    func log(_ data: Data)
+    func log(_ error: Error)
 }
 
 enum Output: String {
@@ -49,7 +49,7 @@ extension ConsoleLogging {
         print(output.log)
     }
     
-    static func log(_ response: URLResponse) {
+    func log(_ response: URLResponse) {
         guard let urlResponse = response as? HTTPURLResponse,
               let url = urlResponse.url?.absoluteString
         else { return }
@@ -65,8 +65,8 @@ extension ConsoleLogging {
         print(output.log)
     }
     
-    static func log(_ data: Data) {
-        guard let body = json(with: data), !body.isEmpty
+    func log(_ data: Data) {
+        guard let body = Self.json(with: data), !body.isEmpty
         else { return }
         
         var output: [String] = []
@@ -76,7 +76,7 @@ extension ConsoleLogging {
         print(output.log)
     }
         
-    static func log(_ error: Error) {
+    func log(_ error: Error) {
         guard let error = error as? URLError,
               let url = error.failureURLString
         else { return }

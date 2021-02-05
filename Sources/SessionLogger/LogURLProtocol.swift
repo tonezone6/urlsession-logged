@@ -19,7 +19,6 @@ final class LogURLProtocol: URLProtocol, ConsoleLogging {
     
     override class func canInit(with request: URLRequest) -> Bool {
         LogURLProtocol.log(request)
-        
         return true
     }
 
@@ -37,22 +36,21 @@ final class LogURLProtocol: URLProtocol, ConsoleLogging {
     }
 }
 
-// MARK: - URLSession data delegate.
+// MARK: URLSession data delegate.
 
 extension LogURLProtocol: URLSessionDataDelegate {
 
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         if let response = dataTask.response {
-            LogURLProtocol.log(response)
-            LogURLProtocol.log(data)
+            log(response)
+            log(data)
         }
         client?.urlProtocol(self, didLoad: data)
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if let error = error {
-            LogURLProtocol.log(error)
-            
+            log(error)
             client?.urlProtocol(self, didFailWithError: error)
         }
         client?.urlProtocolDidFinishLoading(self)
