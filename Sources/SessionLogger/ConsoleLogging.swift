@@ -105,7 +105,7 @@ extension ConsoleLogging {
         }
         // URL encoded.
         if let string = String(data: data, encoding: .utf8) {
-            return string
+            json = string
         }
         return json
     }
