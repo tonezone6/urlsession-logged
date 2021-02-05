@@ -8,7 +8,7 @@ import Foundation
 
 public extension URLSession {
     
-    static var log: URLSession {
+    static var logger: URLSession {
         let configuration: URLSessionConfiguration = .default
         configuration.protocolClasses = [LogURLProtocol.self]
         return URLSession(configuration: configuration)
