@@ -8,7 +8,7 @@ import Foundation
 
 protocol ConsoleLogging {
     
-    static func log(_ request: URLRequest)
+    func log(_ request: URLRequest)
     func log(_ response: URLResponse, _ data: Data)
     func log(_ error: Error)
 }
@@ -31,10 +31,10 @@ enum Symbol: String {
 
 extension ConsoleLogging {
     
-    static var newline: String { "\n" }
-    static var tab    : String { "\t" }
+    var newline: String { "\n" }
+    var tab    : String { "\t" }
     
-    static func log(_ request: URLRequest) {
+    func log(_ request: URLRequest) {
         var output: [String] = []
         
         if let method = request.httpMethod,
@@ -67,14 +67,14 @@ extension ConsoleLogging {
         var output: [String] = []
         
         // Response code.
-        output.append(icon + Self.tab + url)
+        output.append(icon + tab + url)
         output.append(Output.responseCode.bulletPrefix + " " + "\(urlResponse.statusCode)")
         
         // Data.
-        if let body = Self.json(with: data), !body.isEmpty {
+        if let body = json(with: data), !body.isEmpty {
             output.append(Output.responseBody.bulletPrefix + " " + body.tabbed)
         }
-        output.append(Self.newline)
+        output.append(newline)
         
         print(output.log)
     }
@@ -85,18 +85,18 @@ extension ConsoleLogging {
         else { return }
         
         var output: [String] = []
-        output.append(Symbol.failure.rawValue + Self.tab + url)
+        output.append(Symbol.failure.rawValue + tab + url)
         output.append(Output.responseCode.bulletPrefix + " " + "\(error.errorCode)")
         output.append(Output.responseError.bulletPrefix + " " + error.localizedDescription)
-        output.append(Self.newline)
+        output.append(newline)
         
         print(output.log)
     }
 }
 
-extension ConsoleLogging {
+private extension ConsoleLogging {
     
-    static func json(with data: Data) -> String? {
+    func json(with data: Data) -> String? {
         // JSON encoded.
         if let object = try? JSONSerialization.jsonObject(with: data, options: []),
               let jsonData = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),

@@ -17,16 +17,14 @@ final class LogURLProtocol: URLProtocol, ConsoleLogging {
     
     // MARK: URLProtocol.
     
-    override class func canInit(with request: URLRequest) -> Bool {
-        LogURLProtocol.log(request)
-        return true
-    }
+    override class func canInit(
+        with request: URLRequest) -> Bool { true }
 
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
-        return request
-    }
+    override class func canonicalRequest(
+        for request: URLRequest) -> URLRequest { request }
     
     override func startLoading() {
+        log(request)
         sessionTask = session.dataTask(with: request)
         sessionTask?.resume()
     }
