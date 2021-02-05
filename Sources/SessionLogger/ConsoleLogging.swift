@@ -69,7 +69,8 @@ extension ConsoleLogging {
         output.append(icon + Self.tab + url)
         output.append(Output.responseCode.bulletPrefix + " " + "\(urlResponse.statusCode)")
         
-        if let body = Self.json(with: data), !body.isEmpty {
+        if let body = Self.json(with: data),
+           !body.isEmpty {
             output.append(Output.responseBody.bulletPrefix + " " + body.tabbed)
         }
         output.append(Self.newline)
@@ -95,19 +96,17 @@ extension ConsoleLogging {
 extension ConsoleLogging {
     
     static func json(with data: Data) -> String? {
-        var json: String?
-        
         // JSON encoded.
         if let object = try? JSONSerialization.jsonObject(with: data, options: []),
-              let data = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
-              let string = String(data: data, encoding: .utf8) {
-            json = string
+              let jsonData = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
+              let string = String(data: jsonData, encoding: .utf8) {
+            return string
         }
         // URL encoded.
         if let string = String(data: data, encoding: .utf8) {
-            json = string
+            return string
         }
-        return json
+        return nil
     }
 }
 
