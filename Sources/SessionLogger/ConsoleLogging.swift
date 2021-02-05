@@ -9,8 +9,7 @@ import Foundation
 protocol ConsoleLogging {
     
     static func log(_ request: URLRequest)
-    func log(_ response: URLResponse)
-    func log(_ data: Data)
+    func log(_ response: URLResponse, _ data: Data)
     func log(_ error: Error)
 }
 
@@ -21,7 +20,7 @@ enum Output: String {
     case responseBody   = "response body"
     case responseError  = "response error"
     
-    var bulletPrefix: String { "+ \(rawValue):" }
+    var bulletPrefix: String { "\t* \(rawValue):" }
 }
 
 enum Symbol: String {
@@ -32,46 +31,48 @@ enum Symbol: String {
 
 extension ConsoleLogging {
     
+    static var newline: String { "\n" }
+    static var tab    : String { "\t" }
+    
     static func log(_ request: URLRequest) {
         var output: [String] = []
         
-        output.append("\n")
-        if let method = request.httpMethod, let url = request.url?.absoluteString {
-            output.append("\(Symbol.request.rawValue) \(method) \(url)")
+        if let method = request.httpMethod,
+           let url = request.url?.absoluteString {
+            output.append(Symbol.request.rawValue + tab + method + " " + url)
         }
-        if let headers = request.allHTTPHeaderFields, !headers.isEmpty {
-            output.append("\(Output.requestHeaders.bulletPrefix) \(headers)")
+        if let headers = request.allHTTPHeaderFields,
+           !headers.isEmpty {
+            output.append(Output.requestHeaders.bulletPrefix + " " + "\(headers)")
         }
-        if let data = request.httpBody, let body = json(with: data) {
-            output.append("\(Output.requestBody.bulletPrefix) \(body)")
+        if let data = request.httpBody,
+           let body = json(with: data) {
+            output.append(Output.requestBody.bulletPrefix + " " + body)
         }
+        output.append(newline)
 
         print(output.log)
     }
     
-    func log(_ response: URLResponse) {
+    func log(_ response: URLResponse, _ data: Data) {
+        let success: ClosedRange = (200...299)
+        
         guard let urlResponse = response as? HTTPURLResponse,
               let url = urlResponse.url?.absoluteString
         else { return }
         
-        let icon = (200...299)
-            .contains(urlResponse.statusCode) ? Symbol.success.rawValue : Symbol.failure.rawValue
+        let icon = success.contains(urlResponse.statusCode) ?
+            Symbol.success.rawValue :
+            Symbol.failure.rawValue
         
         var output: [String] = []
-        output.append("\n")
-        output.append("\(icon) \(url)")
-        output.append("\(Output.responseCode.bulletPrefix) \(urlResponse.statusCode)")
+        output.append(icon + Self.tab + url)
+        output.append(Output.responseCode.bulletPrefix + " " + "\(urlResponse.statusCode)")
         
-        print(output.log)
-    }
-    
-    func log(_ data: Data) {
-        guard let body = Self.json(with: data), !body.isEmpty
-        else { return }
-        
-        var output: [String] = []
-        output.append("\(Output.responseBody.bulletPrefix)")
-        output.append(body)
+        if let body = Self.json(with: data), !body.isEmpty {
+            output.append(Output.responseBody.bulletPrefix + " " + body.tabbed)
+        }
+        output.append(Self.newline)
         
         print(output.log)
     }
@@ -82,10 +83,10 @@ extension ConsoleLogging {
         else { return }
         
         var output: [String] = []
-        output.append("\n")
-        output.append("\(Symbol.failure.rawValue) \(url)")
-        output.append("\(Output.responseCode.bulletPrefix) \(error.errorCode)")
-        output.append("\(Output.responseError.bulletPrefix) \(error.localizedDescription)")
+        output.append(Symbol.failure.rawValue + Self.tab + url)
+        output.append(Output.responseCode.bulletPrefix + " " + "\(error.errorCode)")
+        output.append(Output.responseError.bulletPrefix + " " + error.localizedDescription)
+        output.append(Self.newline)
         
         print(output.log)
     }
@@ -95,16 +96,26 @@ extension ConsoleLogging {
     
     static func json(with data: Data) -> String? {
         guard let object = try? JSONSerialization.jsonObject(with: data, options: []),
-              let data   = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
-              let json   = String(data: data, encoding: .utf8)
+              let data = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
+              let json = String(data: data, encoding: .utf8)
         else { return nil }
         
         return json
     }
 }
 
-extension Array where Element == String {
+// MARK: Other extensions.
+
+private extension Array where Element == String {
+    
     var log: String {
         joined(separator: "\n")
+    }
+}
+
+private extension String {
+    
+    var tabbed: String {
+        replacingOccurrences(of: "\n", with: "\n\t")
     }
 }

@@ -42,8 +42,7 @@ extension LogURLProtocol: URLSessionDataDelegate {
 
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         if let response = dataTask.response {
-            log(response)
-            log(data)
+            log(response, data)
         }
         client?.urlProtocol(self, didLoad: data)
     }
