@@ -37,7 +37,7 @@ extension ConsoleLogging {
         
         output.append("\n")
         if let method = request.httpMethod, let url = request.url?.absoluteString {
-            output.append("\(Symbol.request) \(method) \(url)")
+            output.append("\(Symbol.request.rawValue) \(method) \(url)")
         }
         if let headers = request.allHTTPHeaderFields, !headers.isEmpty {
             output.append("\(Output.requestHeaders.bulletPrefix) \(headers)")
@@ -55,7 +55,7 @@ extension ConsoleLogging {
         else { return }
         
         let icon = (200...299)
-            .contains(urlResponse.statusCode) ? Symbol.success : Symbol.failure
+            .contains(urlResponse.statusCode) ? Symbol.success.rawValue : Symbol.failure.rawValue
         
         var output: [String] = []
         output.append("\n")
@@ -83,7 +83,7 @@ extension ConsoleLogging {
         
         var output: [String] = []
         output.append("\n")
-        output.append("\(Symbol.failure) \(url)")
+        output.append("\(Symbol.failure.rawValue) \(url)")
         output.append("\(Output.responseCode.bulletPrefix) \(error.errorCode)")
         output.append("\(Output.responseError.bulletPrefix) \(error.localizedDescription)")
         
