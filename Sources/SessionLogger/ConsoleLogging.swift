@@ -44,11 +44,8 @@ extension ConsoleLogging {
         if let headers = request.allHTTPHeaderFields, !headers.isEmpty {
             output.append(Output.requestHeaders.bulletPrefix + " " + "\(headers)")
         }
-//        if let data = request.httpBody,
-//           let body = json(with: data) {
-//            output.append(Output.requestBody.bulletPrefix + " " + body)
-//        }
-        if let body = request.httpBody?.string {
+        if let data = request.httpBody,
+           let body = data.payload {
             output.append(Output.requestBody.bulletPrefix + " " + body)
         }
         output.append(newline)
@@ -74,7 +71,7 @@ extension ConsoleLogging {
         output.append(Output.responseCode.bulletPrefix + " " + "\(urlResponse.statusCode)")
         
         // Data.
-        if let body = json(with: data), !body.isEmpty {
+        if let body = data.payload, !body.isEmpty {
             output.append(Output.responseBody.bulletPrefix + " " + body.tabbed)
         }
         output.append(newline)
@@ -97,24 +94,24 @@ extension ConsoleLogging {
     }
 }
 
-private extension ConsoleLogging {
+// MARK: Other extensions.
+
+private extension Data {
     
-    func json(with data: Data) -> String? {
-        if let string = String(data: data, encoding: .utf8) {
-            /* URL encoded */
-            return string
-        }
-        if let json = try? JSONSerialization.jsonObject(with: data, options: []),
+    var payload: String? {
+        if let json = try? JSONSerialization.jsonObject(with: self, options: []),
            let jdata = try? JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted]),
            let string = String(data: jdata, encoding: .utf8) {
             /* JSON encoded */
             return string
         }
+        if let string = String(data: self, encoding: .utf8) {
+            /* URL encoded */
+            return string
+        }
         return nil
     }
 }
-
-// MARK: Other extensions.
 
 private extension Array where Element == String {
     
@@ -127,22 +124,5 @@ private extension String {
     
     var tabbed: String {
         replacingOccurrences(of: "\n", with: "\n\t")
-    }
-}
-
-private extension Data {
-    
-    var string: String? {
-        // JSON encoded.
-        if let object = try? JSONSerialization.jsonObject(with: self, options: []),
-              let data = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
-              let string = String(data: data, encoding: .utf8) {
-            return string
-        }
-        // URL encoded.
-        if let string = String(data: self, encoding: .utf8) {
-            return string
-        }
-        return nil
     }
 }
