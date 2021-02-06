@@ -13,116 +13,49 @@ protocol ConsoleLogging {
     func log(_ error: Error)
 }
 
-enum Output: String {
-    case requestHeaders = "request headers"
-    case requestBody    = "request body"
-    case responseCode   = "response code"
-    case responseBody   = "response body"
-    case responseError  = "response error"
-    
-    var bulletPrefix: String { "\t* \(rawValue):" }
-}
-
-enum Symbol: String {
-    case request = "🚀"
-    case success = "👍"
-    case failure = "⛔️"
+private extension Array where Element == String {
+    mutating func append(_ output: ConsoleOutput) {
+        append(output.value)
+    }
 }
 
 extension ConsoleLogging {
     
-    var newline: String { "\n" }
-    var tab    : String { "\t" }
-    
     func log(_ request: URLRequest) {
-        var output: [String] = []
-        
+        var array: [String] = []
+                
         if let method = request.httpMethod,
            let url = request.url?.absoluteString {
-            output.append(Symbol.request.rawValue + tab + method + " " + url)
+            array.append(.request(method: method, url: url))
         }
-        if let headers = request.allHTTPHeaderFields, !headers.isEmpty {
-            output.append(Output.requestHeaders.bulletPrefix + " " + "\(headers)")
+        if let dict = request.allHTTPHeaderFields, !dict.isEmpty {
+            array.append(.headers(dict))
         }
-        if let data = request.httpBody,
-           let body = data.payload {
-            output.append(Output.requestBody.bulletPrefix + " " + body)
+        if let stream = request.httpBodyStream,
+           let string = stream.data?.body {
+            array.append(.body(string))
         }
-        output.append(newline)
-
-        print(output.log)
+        print(array.joined(separator: "\n"))
     }
     
     func log(_ response: URLResponse, _ data: Data) {
-        let success: ClosedRange = (200...299)
-        
         guard let urlResponse = response as? HTTPURLResponse,
               let url = urlResponse.url?.absoluteString
         else { return }
         
-        let icon = success.contains(urlResponse.statusCode) ?
-            Symbol.success.rawValue :
-            Symbol.failure.rawValue
+        var array: [String] = []
         
-        var output: [String] = []
-        
-        // Response code.
-        output.append(icon + tab + url)
-        output.append(Output.responseCode.bulletPrefix + " " + "\(urlResponse.statusCode)")
-        
-        // Data.
-        if let body = data.payload, !body.isEmpty {
-            output.append(Output.responseBody.bulletPrefix + " " + body.tabbed)
+        array.append(.response(code: urlResponse.statusCode, url: url))
+        if let string = data.body, !string.isEmpty {
+            array.append(.body(string))
         }
-        output.append(newline)
-        
-        print(output.log)
+        print(array.joined(separator: "\n"))
     }
         
     func log(_ error: Error) {
-        guard let error = error as? URLError,
-              let url = error.failureURLString
-        else { return }
+        guard let error = error as? URLError else { return }
         
-        var output: [String] = []
-        output.append(Symbol.failure.rawValue + tab + url)
-        output.append(Output.responseCode.bulletPrefix + " " + "\(error.errorCode)")
-        output.append(Output.responseError.bulletPrefix + " " + error.localizedDescription)
-        output.append(newline)
-        
-        print(output.log)
-    }
-}
-
-// MARK: Other extensions.
-
-private extension Data {
-    
-    var payload: String? {
-        if let json = try? JSONSerialization.jsonObject(with: self, options: []),
-           let jdata = try? JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted]),
-           let string = String(data: jdata, encoding: .utf8) {
-            /* JSON encoded */
-            return string
-        }
-        if let string = String(data: self, encoding: .utf8) {
-            /* URL encoded */
-            return string
-        }
-        return nil
-    }
-}
-
-private extension Array where Element == String {
-    
-    var log: String {
-        joined(separator: "\n")
-    }
-}
-
-private extension String {
-    
-    var tabbed: String {
-        replacingOccurrences(of: "\n", with: "\n\t")
+        let output: ConsoleOutput = .failure(error)
+        print(output.value)
     }
 }
