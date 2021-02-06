@@ -7,23 +7,42 @@
 
 import Foundation
 
-extension Data {
+extension String {
     
-    var body: String? {
+    init?(json: Data) {
         do {
             // JSON encoded.
-            let object = try JSONSerialization.jsonObject(with: self, options: [])
+            let object = try JSONSerialization.jsonObject(with: json, options: [])
             let data = try JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted])
-            if let string = String(data: data, encoding: .utf8) {
-                return string
-            }
+            self.init(data: data, encoding: .utf8)
         } catch {
-            print(">>> decoding JSON `body` error", error)
+            print("-> session logger, decoding JSON error", error)
+            
+            // URL encoded.
+            self.init(data: json, encoding: .utf8)
         }
-        // URL encoded.
-        if let string = String(data: self, encoding: .utf8) {
-            return string
+    }
+}
+
+extension Data {
+    
+    init?(stream: InputStream) {
+        self.init()
+        stream.open()
+        
+        let bufferSize: Int = 8
+        let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+        
+        while stream.hasBytesAvailable {
+            let readB = stream.read(buffer, maxLength: bufferSize)
+            if let error = stream.streamError {
+                print("-> session logger, input stream error", error)
+                return nil
+            }
+            append(buffer, count: readB)
         }
-        return nil
+        
+        buffer.deallocate()
+        stream.close()
     }
 }

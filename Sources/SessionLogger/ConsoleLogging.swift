@@ -20,7 +20,7 @@ private extension Array where Element == String {
 }
 
 extension ConsoleLogging {
-    
+
     func log(_ request: URLRequest) {
         var array: [String] = []
                 
@@ -31,8 +31,9 @@ extension ConsoleLogging {
         if let dict = request.allHTTPHeaderFields, !dict.isEmpty {
             array.append(.headers(dict))
         }
-        if let stream = request.httpBodyStream,
-           let string = stream.data?.body {
+        if let inputStream = request.httpBodyStream,
+           let data = Data(stream: inputStream),
+           let string = String(json: data), !string.isEmpty {
             array.append(.body(string))
         }
         print(array.joined(separator: "\n"))
@@ -46,7 +47,7 @@ extension ConsoleLogging {
         var array: [String] = []
         
         array.append(.response(code: urlResponse.statusCode, url: url))
-        if let string = data.body, !string.isEmpty {
+        if let string = String(json: data), !string.isEmpty {
             array.append(.body(string))
         }
         print(array.joined(separator: "\n"))

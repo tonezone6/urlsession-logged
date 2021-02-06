@@ -27,7 +27,7 @@ extension ConsoleOutput {
         
         case .response(let code, let url):
             let success = (200...299).contains(code)
-            let line1 = success ? "👍" : "⛔️" + "\t" + url
+            let line1 = (success ? "👍" : "⛔️") + "\t" + url
             let line2 = "\t" + "* code: " + "\(code)"
             return [line1, line2].joined(separator: "\n")
 

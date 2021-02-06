@@ -9,11 +9,13 @@
 import Foundation
 
 final public class LogURLProtocol: URLProtocol, ConsoleLogging {
-    
-    private var sessionTask: URLSessionTask?
+        
     private lazy var session: URLSession = {
         URLSession(configuration: .default, delegate: self, delegateQueue: nil)
     }()
+    
+    private var dataTask: URLSessionTask?
+    private var receivedData = Data()
     
     // MARK: URL protocol.
     
@@ -24,12 +26,13 @@ final public class LogURLProtocol: URLProtocol, ConsoleLogging {
         for request: URLRequest) -> URLRequest { request }
     
     public override func startLoading() {
-        sessionTask = session.dataTask(with: request)
-        sessionTask?.resume()
+        dataTask = session.dataTask(with: request)
+        dataTask?.resume()
+        /* Request */ log(request)
     }
     
     public override func stopLoading() {
-        sessionTask?.cancel()
+        dataTask?.cancel()
     }
 }
 
@@ -38,19 +41,19 @@ final public class LogURLProtocol: URLProtocol, ConsoleLogging {
 extension LogURLProtocol: URLSessionDataDelegate {
 
     public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
-        log(request)
-        
-        if let response = dataTask.response {
-            log(response, data)
-        }
+        receivedData.append(data)
         client?.urlProtocol(self, didLoad: data)
     }
 
     public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if let error = error {
-            log(error)
+            /* Error */ log(error)
             client?.urlProtocol(self, didFailWithError: error)
+        } else {
+            if let response = task.response {
+                /* Response, data */ log(response, receivedData)
+            }
+            client?.urlProtocolDidFinishLoading(self)
         }
-        client?.urlProtocolDidFinishLoading(self)
     }
 }
