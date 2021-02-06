@@ -8,7 +8,7 @@
 
 import Foundation
 
-final class LogURLProtocol: URLProtocol, ConsoleLogging {
+final public class LogURLProtocol: URLProtocol, ConsoleLogging {
     
     private var sessionTask: URLSessionTask?
     private lazy var session: URLSession = {
@@ -17,18 +17,18 @@ final class LogURLProtocol: URLProtocol, ConsoleLogging {
     
     // MARK: URL protocol.
     
-    override class func canInit(
+    public override class func canInit(
         with request: URLRequest) -> Bool { true }
 
-    override class func canonicalRequest(
+    public override class func canonicalRequest(
         for request: URLRequest) -> URLRequest { request }
     
-    override func startLoading() {
+    public override func startLoading() {
         sessionTask = session.dataTask(with: request)
         sessionTask?.resume()
     }
     
-    override func stopLoading() {
+    public override func stopLoading() {
         sessionTask?.cancel()
     }
 }
@@ -37,7 +37,7 @@ final class LogURLProtocol: URLProtocol, ConsoleLogging {
 
 extension LogURLProtocol: URLSessionDataDelegate {
 
-    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+    public func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         log(request)
         
         if let response = dataTask.response {
@@ -46,7 +46,7 @@ extension LogURLProtocol: URLSessionDataDelegate {
         client?.urlProtocol(self, didLoad: data)
     }
 
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    public func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if let error = error {
             log(error)
             client?.urlProtocol(self, didFailWithError: error)
