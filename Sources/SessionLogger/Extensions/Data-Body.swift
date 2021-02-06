@@ -10,13 +10,17 @@ import Foundation
 extension Data {
     
     var body: String? {
-        // json encoded.
-        if let json = try? JSONSerialization.jsonObject(with: self, options: []),
-           let jdata = try? JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted]),
-           let string = String(data: jdata, encoding: .utf8) {
-            return string
+        do {
+            // JSON encoded.
+            let object = try JSONSerialization.jsonObject(with: self, options: [])
+            let data = try JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted])
+            if let string = String(data: data, encoding: .utf8) {
+                return string
+            }
+        } catch {
+            print(">>> decoding JSON `body` error", error)
         }
-        // url encoded.
+        // URL encoded.
         if let string = String(data: self, encoding: .utf8) {
             return string
         }

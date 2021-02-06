@@ -16,34 +16,30 @@ enum ConsoleOutput {
 }
 
 extension ConsoleOutput {
-    var tb: String { "\t*" }
     
     var value: String {
         switch self {
         case .request(let method, let url):
-            return "\n🚀\t\(method) \(url)"
+            return "\n" + "🚀" + "\t" + method + " " + url
             
         case .headers(let dict):
-            return "\(tb) headers: \(dict)"
+            return "\t" + "* headers: " + "\(dict)"
         
         case .response(let code, let url):
             let success = (200...299).contains(code)
-            let emojy = success ? "👍" : "⛔️"
-            return """
-                \(emojy)\t\(url)
-                \(tb) code: \(code)
-                """
-            
+            let line1 = success ? "👍" : "⛔️" + "\t" + url
+            let line2 = "\t" + "* code: " + "\(code)"
+            return [line1, line2].joined(separator: "\n")
+
         case .body(let string):
             let body = string.replacingOccurrences(of: "\n", with: "\n\t")
-            return "\(tb) body: \(body)"
+            return "\t" +  "* body: " + body
     
         case .failure(let error):
-            return """
-                ⛔️\t\(error.failureURLString ?? "")
-                \(tb) code: \(error.errorCode)
-                \(tb) error: \(error.localizedDescription)
-                """
+            let line1 = "⛔️" + "\t" + (error.failureURLString ?? "")
+            let line2 = "\t" + "* code: " + "\(error.errorCode)"
+            let line3 = "\t" + "* error: " + error.localizedDescription
+            return [line1, line2, line3].joined(separator: "\n")
         }
     }
 }
