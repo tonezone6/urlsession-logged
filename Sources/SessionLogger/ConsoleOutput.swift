@@ -21,7 +21,7 @@ extension ConsoleOutput {
     var value: String {
         switch self {
         case .request(let method, let url):
-            return "🚀\t\(method) \(url)"
+            return "\n🚀\t\(method) \(url)"
             
         case .headers(let dict):
             return "\(tb) headers: \(dict)"
