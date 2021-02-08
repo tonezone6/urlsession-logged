@@ -6,11 +6,18 @@
 
 import Foundation
 
+public extension URLSessionConfiguration {
+    
+    static var logConfiguration: URLSessionConfiguration {
+        let config: URLSessionConfiguration = .default
+        config.protocolClasses = [LogURLProtocol.self]
+        return config
+    }
+}
+
 public extension URLSession {
     
-    static var logger: URLSession {
-        let configuration: URLSessionConfiguration = .default
-        configuration.protocolClasses = [LogURLProtocol.self]
-        return URLSession(configuration: configuration)
+    static var logSession: URLSession {
+        URLSession(configuration: .logConfiguration)
     }
 }
