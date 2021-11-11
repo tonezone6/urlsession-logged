@@ -1,26 +1,34 @@
-# Session logger
+# URLSession logged
 
-A custom `URLSession` for logging network activity into the console. 
+A custom `URLSession` for logging network activity into the console.
 
 ```swift
-URLSession.logger.load(User.self, with: request) { ... }
+URLSession.logged(.basic)
 ```
 
-Output
+There are two available output levels: `basic` and `detailed`. 
+
+Basic
 
 ```
-🚀  POST https://some-endpoint.com/user
-    * request headers: ["Content-Type": "application/json"]
-    * request body: {
+🚀  GET https://users-endpoint.com/user
+✅  200 https://users-endpoint.com/user 
+```
+
+
+Detailed
+
+```
+🚀  POST https://users-endpoint.com/user
+    headers: ["Content-Type": "application/json"]
+    body: {
         "foo" : "Foo",
         "bar" : "Bar"
-      }
+    }
 
-👍  https://some-endpoint.com/user
-    * response code: 200
-    * response body: {
+✅  200 https://users-endpoint.com/user 
+    {
         "id" : 25918204,
-        "first" : "John",
-        "last" : "Williams"
-      }
+        "name" : "John Doe"
+    }
 ```
