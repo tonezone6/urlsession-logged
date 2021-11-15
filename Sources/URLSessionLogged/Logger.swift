@@ -90,8 +90,8 @@ public enum Output {
             
         case .failure(let error):
             var lines: [String] = []
-            lines.append("⛔️" + (error.failureURLString ?? "").tabbed)
-            lines.append("\(error.errorCode)".tabbed + " \(error.localizedDescription)")
+            lines.append("⛔️" + "\(error.errorCode) \(error.failureURLString ?? "")".tabbed)
+            lines.append(error.localizedDescription.tabbed)
             return lines.joined(separator: "\n")
         }
     }

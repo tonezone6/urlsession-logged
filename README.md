@@ -20,8 +20,8 @@ Detailed
 
 ```
 🚀  POST https://users-endpoint.com/user
-    headers: ["Content-Type": "application/json"]
-    body: {
+    "Content-Type" : "application/json"
+    {
         "foo" : "Foo",
         "bar" : "Bar"
     }
@@ -31,4 +31,7 @@ Detailed
         "id" : 25918204,
         "name" : "John Doe"
     }
+    
+⛔️  -999 https://users-endpoint.com/user
+    timeout
 ```
