@@ -76,8 +76,12 @@ public enum Output {
             return "\n" + "🚀" + "\(method) ".tabbed + url
             
         case .headers(let dict):
-            return "headers: ".tabbed + "\(dict)"
-        
+            var lines: [String] = []
+            for (key, value) in dict {
+                lines.append("\(key) : \(value)".tabbed)
+            }
+            return lines.joined(separator: "\n")
+            
         case .response(let code, let url):
             return ((200...299).contains(code) ? "✅" : "⛔️") + "\(code) ".tabbed + url
 
@@ -85,10 +89,10 @@ public enum Output {
             return body.replacingOccurrences(of: "\n", with: "\n\t").tabbed
             
         case .failure(let error):
-            let one   = "⛔️" + (error.failureURLString ?? "").tabbed
-            let two   = "code ".tabbed + "\(error.errorCode)"
-            let three = "error ".tabbed + error.localizedDescription
-            return [one, two, three].joined(separator: "\n")
+            var lines: [String] = []
+            lines.append("⛔️" + (error.failureURLString ?? "").tabbed)
+            lines.append("\(error.errorCode)".tabbed + " \(error.localizedDescription)")
+            return lines.joined(separator: "\n")
         }
     }
 }

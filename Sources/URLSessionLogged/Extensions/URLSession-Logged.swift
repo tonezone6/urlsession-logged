@@ -2,11 +2,12 @@
 import Foundation
 
 extension URLSession {
-    public static func logged(_ level: LogLevel = .detailed) -> URLSession {
-        let config = URLSessionConfiguration.default
-        config.protocolClasses = [URLLogProtocol.self]
-        URLLogProtocol.level = level
+    public static func logged(
+        _ level: LogLevel = .detailed,
+        configuration: URLSessionConfiguration = .default) -> Self {
             
-        return URLSession(configuration: config)
+        configuration.protocolClasses = [URLLogProtocol.self]
+        URLLogProtocol.level = level
+        return .init(configuration: configuration)
     }
 }
